@@ -15,6 +15,7 @@
 # limitations under the License.
 #
 import webapp2
+import logging
 from webapp2_handler import GeneralHandler
 from hash_generator import *
 
@@ -52,9 +53,41 @@ class User(db.Model):
 
 
 
+# Blog Section
+class Post(db.Model):
+    title = db.StringProperty(verbose_name="Title", required=True)
+    quote = db.StringProperty(verbose_name="Main blog quote", multiline=True)
+    content = db.TextProperty(required=True)
+    image = db.StringProperty(required=False)
+    created = db.DateTimeProperty(auto_now_add=True)
+    edited = db.DateTimeProperty(auto_now=True)
+    user = db.ReferenceProperty(User, collection_name="blogs", required=True)
+    votes = db.IntegerProperty(default=0)
+
+    @classmethod
+    def by_user(cls, user):
+        # Get all blog objects to this user
+        u = Post.all().filter('user', user).order('created')
+        return u
 
 
+    @classmethod
+    # NB, get_by_id might need parent param.
+    def by_id(cls, blog_id):
+        return Post.get_by_id(blog_id)
 
+    @classmethod
+    def get_comments(cls, blog_post):
+        comments = Comment.all().filter('blog_post', blog_post).order('-created')
+        return comments
+
+
+class Comment(db.Model):
+    blog_post = db.ReferenceProperty(Post, collection_name="Post comments")
+    comment = db.StringProperty()
+    created = db.DateTimeProperty(auto_now_add=True)
+    edited = db.DateTimeProperty(auto_now=True)
+    user = db.ReferenceProperty(User, required=True)
 
 
 
@@ -83,11 +116,101 @@ class Handler(GeneralHandler):
         uid = self.read_secure_cookie('user_id')
         self.user = uid and User.by_id(int(uid))
 
+
 class MainHandler(Handler):
     def get(self):
+        # Gather the 5 most recent posts, sorted by date most recent.
+        posts = db.GqlQuery("select * from Post ORDER BY created desc")[:5]
+        self.render("index.html", posts=posts)
 
-        #blogs = db.GqlQuery("select * from BlogPost ORDER BY created desc")[:5]
-        self.render("index.html")
+
+# USER SYSTEM
+class SignUp(Handler):
+    def get(self):
+        if self.user:
+            logging.info("Already Signed in?? %s" % self.user)
+            self.redirect('/blog')
+        self.render("signup.html")
+
+    def post(self):
+        have_error = False
+        self.username = self.request.get('username')
+        self.password = self.request.get('password')
+        self.password_conf = self.request.get('password_conf')
+        self.email = self.request.get('email')
+
+        # Standard Info to be given no matter the outcome
+        self.context = {
+            'username': self.username,
+            'email': self.email
+        }
+
+        if not valid_username(self.username):
+            self.context['error_username'] = "Not valid username"
+            have_error = True
+
+        if not valid_password(self.password):
+            self.context['error_password'] = "Not valid password"
+            have_error = True
+        elif self.password != self.password_conf:
+            self.context['error_password_conf'] = "Passwords did not match"
+            have_error = True
+
+        if have_error:
+            self.render('signup.html', **self.context)
+        else:
+            self.done()
+
+
+class Register(SignUp):
+    def done(self):
+        user = User.by_username(self.username)
+
+        if user:
+            msg = "User Already Exists"
+            self.context['error_username'] = msg
+            self.render('signup.html', **self.context)
+
+        else:
+            user = User.register(self.username, self.password, self.email)
+            user.put()
+
+            self.login(user)
+            self.redirect('/blog')
+
+
+class Login(Handler):
+    def get(self):
+        self.render('login.html')
+
+    def post(self):
+        users = User.all()
+        for user in users:
+            logging.info(user.username)
+        username = self.request.get('username')
+        password = self.request.get('password')
+
+        u = User.login(username, password)
+        if u:
+            self.login(u)
+
+            given_redirect_path = self.request.get('next')
+
+            if given_redirect_path:
+                self.redirect(given_redirect_path)
+            else:
+                self.redirect('/')
+        else:
+            msg = 'Invalid login'
+            self.render('login.html', error = msg)
+
+
+class Logout(Handler):
+    def get(self):
+        self.logout()
+        self.redirect('/')
+
+
 
 
 
