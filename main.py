@@ -51,6 +51,13 @@ class User(db.Model):
             return u
 
 
+
+
+
+
+
+
+
 class Handler(GeneralHandler):
     # User System functions.
     # Cookie Functions
@@ -76,9 +83,13 @@ class Handler(GeneralHandler):
         uid = self.read_secure_cookie('user_id')
         self.user = uid and User.by_id(int(uid))
 
-class MainHandler(webapp2.RequestHandler):
+class MainHandler(Handler):
     def get(self):
-        self.response.write('Helloo world!')
+
+        #blogs = db.GqlQuery("select * from BlogPost ORDER BY created desc")[:5]
+        self.render("index.html")
+
+
 
 app = webapp2.WSGIApplication([
     ('/', MainHandler)

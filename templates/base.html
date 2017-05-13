@@ -95,17 +95,18 @@ $( document ).ready(function() {
         var notification = document.querySelector('.mdl-js-snackbar');
         notification.MaterialSnackbar.showSnackbar(
             {
-                message: 'Image Uploaded'
+                message: string
             }
         );
     }
-
+    {% if message %}
     $(window).on('load', function () {
-        var ErrorStringValue = 'Somethings Wrong!!';
+        var ErrorStringValue = "{{ message }}";
         if (ErrorStringValue.length > 0) {
             addSnackbar(ErrorStringValue);
         }
     });
+    {% endif %}
 
 });
 </script>
