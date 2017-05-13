@@ -1,0 +1,25 @@
+.post-content{
+    padding: 20px;
+}
+
+.post-content p{
+    font-size: 18px;
+}
+
+.post-img {
+    padding: 15px;
+    width: 600px;
+}
+
+.title {
+    border-bottom: 6px solid #009688;
+}
+
+.new_section {
+    border-bottom: 2px solid dimgrey;
+}
+
+/* COMMENTS */
+.comment_form{
+    width: 100%;
+}

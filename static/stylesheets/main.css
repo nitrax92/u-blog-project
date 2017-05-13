@@ -1,0 +1,30 @@
+
+@media screen and (min-width: 840px){
+    .mdl-layout__content {
+        padding-left: 100px;
+        padding-right: 100px;
+    }
+}
+
+.mdl-layout__content {
+    background-image: url("/static/images/bg_1920x1080.jpg");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.mdl-card {
+    width: 100%;
+}
+
+.mdl-layout-title a{
+    text-decoration: none;
+    color: white;
+}
+
+.img-responsive {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+

@@ -1,0 +1,29 @@
+.mdl-card__title {
+    border-bottom: 4px solid #009688;
+    padding-bottom: 0px;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+.mdl-card__title-text{
+    font-size: 36px;
+}
+.mdl-card__supporting-text {
+    padding-left: 20px;
+    padding-top: 20px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.mdl-card__supporting-text p{
+    font-size: 26px;
+    margin-left: 20px;
+}
+
+.card__actions {
+    padding-left: 20px;
+    padding-bottom: 10px;
+}
+
+.mdl-card {
+    margin-top: 30px;
+}
