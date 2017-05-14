@@ -51,30 +51,42 @@
     </div>
 
     <!-- MDL template Comment section -->
-    <div class="mdl-grid">
         {% if user %}
-        <form class="mdl-cell mdl-cell--12-col" method="post">
+        <form class="mdl-cell mdl-cell--2-offset-desktop mdl-cell--2-offset-tablet mdl-cell--10-col mdl-grid" method="post">
 
-                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <div class=" mdl-cell mdl-cell--10-col mdl-cell--4-col-tablet mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                   <textarea rows=1 class="mdl-textfield__input" id="comment" name="comment_text"></textarea>
                   <label for="comment" class="mdl-textfield__label">Join the discussion</label>
                 </div>
+            <br>
+                <div class="mdl-cell mdl-cell--2-col mdl-cell--2-col-tablet mdl-cell--middle">
                 <button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon">
                   <i class="material-icons" role="presentation">check</i><span class="visuallyhidden">add comment</span>
                 </button>
-
+                </div>
         </form>
         {% endif %}
 
-        <div class="mdl-cell mdl-cell--12-col">
-            <h3>Comments</h3>
+        <div class="mdl-cell mdl-cell--12-col mdl-grid">
             {% for comment in comments %}
-                <p>{{ comment.comment }}</p>
-            <hr>
+                <div class="mdl-cell mdl-cell--2-col mdl-cell--2-col-tablet mdl-cell--2-col-phone">
+                    <img src="/static/images/profile_img/users-{{ range(1, 16) | random }}.svg" class="avatar"><br>
+                {{ comment.user.username }} <br>
+                {{ comment.created.date() }} <br>
+                {{ comment.created.hour }}:{{ comment.created.minute }}
+
+                </div>
+                <div class="mdl-cell mdl-cell--10-col mdl-cell--6-col-tablet mdl-cell--4-col-phone mdl-cell--bottom">
+                    <p>{{ comment.comment }}</p>
+                </div>
+                <div class="mdl-cell--12-col new_section">
+
+                </div>
+
+
+
             {% endfor %}
         </div>
-    </div>
-
 
         </div>
         <div class="mdl-cell mdl-cell--2-col mdl-cell--hide-tablet mdl-cell--hide-phone"></div>

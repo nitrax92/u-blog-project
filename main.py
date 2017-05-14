@@ -83,7 +83,7 @@ class Post(db.Model):
 
 class Comment(db.Model):
     blog_post = db.ReferenceProperty(Post, collection_name="Post comments")
-    comment = db.StringProperty()
+    comment = db.StringProperty(multiline=True)
     created = db.DateTimeProperty(auto_now_add=True)
     edited = db.DateTimeProperty(auto_now=True)
     user = db.ReferenceProperty(User, required=True)
