@@ -88,6 +88,11 @@ class Comment(db.Model):
     edited = db.DateTimeProperty(auto_now=True)
     user = db.ReferenceProperty(User, required=True)
 
+    @classmethod
+    def by_post(cls, post):
+        comments = Comment.all().filter('blog_post', post)
+        return comments
+
 
 
 class Handler(GeneralHandler):
@@ -119,7 +124,9 @@ class Handler(GeneralHandler):
 class MainHandler(Handler):
     def get(self):
         # Gather the 5 most recent posts, sorted by date most recent.
+        posts = ''
         posts = db.GqlQuery("select * from Post ORDER BY created desc")[:5]
+        logging.info(posts)
         self.render("index.html", posts=posts)
 
 
@@ -156,7 +163,7 @@ class SignUp(Handler):
             have_error = True
 
         if have_error:
-            self.render('user/signup.html', **self.context)
+            self.render('user/signup.html', message="Error",  **self.context)
         else:
             self.done()
 
@@ -215,9 +222,11 @@ class ViewPost(Handler):
         post = Post.get_by_id(int(post_id))
 
         if post:
-            comments = post.get_comments(post)
+            comments = Comment.by_post(post)
+            if not comments:
+                comments = None
             logging.info(comments)
-            self.render("blog_post.html", post=post, comments=comments)
+            self.render("blog/blog_post.html", post=post, comments=comments)
 
         else:
 
@@ -226,17 +235,18 @@ class ViewPost(Handler):
     def post(self, post_id):
         # Posted comment to blog_post
         comment = self.request.get("comment_text")
-
+        error_message = ''
         if post_id.isdigit():
             Blog_post = Post.get_by_id(int(post_id))
 
             if comment:
                 new_comment = Comment(blog_post=Blog_post, comment=comment, user=self.user)
                 new_comment.put()
+                new_comment.save()
             else:
                 error_message = "Did you remember a comment?"
             comments = Blog_post.get_comments(Blog_post)
-            self.render("blog_post.html", message=error_message, post=Blog_post, comments=comments)
+            self.render("blog/blog_post.html", message=error_message, post=Blog_post, comments=comments)
 
         else:
             self.redirect("/")
@@ -258,19 +268,40 @@ class NewPost(Handler):
 
         content = content.replace('\n', '<br>')
         if not user:
-
-            self.redirect("/register")
+            self.redirect("/login?next=/blog/new")
 
         # All good.
         if title and content:
             b = Post(title=title, content=content, user=user, quote=quote, image=image)
-            b.put()
+            Post.put(b)
+            b.save()
             self.redirect("/")
 
         else:
-            self.render("blog/new_blog.html", title=title, content=content)
+            self.render("blog/new_blog.html", message="Missing information.", title=title, content=content)
             # ERROR; ERROR; ERROR; ERROR; ERROR
 
+
+class EditBlogEntry(Handler):
+    def get(self, blog_id):
+        entry = Post.get_by_id(int(blog_id))
+
+        if entry and self.user and entry.user.key() == self.user.key():
+            self.render("blog/new_post.html", post=entry)
+        else:
+            self.redirect("/")
+
+    def post(self, blog_id):
+        entry = Post.get_by_id(int(blog_id))
+
+        if entry and self.user and entry.user.key() == self.user.key():
+            entry.title=self.request.get('post_title')
+            entry.content=self.request.get('post_content')
+            entry.put()
+        self.redirect("/")
+
+
+# View for displaying all post of one concretre user.
 class UserPosts(Handler):
     def get(self, username):
         user = User.by_username(username)
@@ -281,6 +312,29 @@ class UserPosts(Handler):
         self.redirect("/")
 
 
+class Vote(Handler):
+    def get(self, post_id):
+        blog_post = Post.get_by_id(int(post_id))
+        if blog_post:
+            if not self.user or blog_post.user.key().id() != self.user.key().id():
+                blog_post = self.vote(blog_post)
+                blog_post.put()
+
+        self.redirect("/view/%s" % post_id)
+
+
+class UpVote(Vote):
+    def vote(self, blog_post):
+        blog_post.votes += 1
+        return blog_post
+
+
+class DownVote(Vote):
+    def vote(self, blog_post):
+        blog_post.votes -= 1
+        return blog_post
+
+
 app = webapp2.WSGIApplication([
     ('/', MainHandler),
     ('/register', Register),
@@ -289,4 +343,7 @@ app = webapp2.WSGIApplication([
     ('/new', NewPost),
     ('/user/([a-zA-Z0-9_-]\w+)', UserPosts),
     ('/view/([0-9]+)', ViewPost),
+    ('/edit/([0-9]+)', EditBlogEntry),
+    ('/upvote/([0-9]+)', UpVote),
+    ('/downvote/([0-9]+)', DownVote)
 ], debug=True)

@@ -1,7 +1,42 @@
 {% extends 'base.html' %}
 
+{% block siteStyle %}
+<link type="text/css" rel="stylesheet" href="/static/stylesheets/frontpage_style.css" />
+{% endblock %}
 
 {% block content %}
+<div class="mdl-grid">
+{% if posts %}
+    {% for post in posts %}
+            <div class="mdl-cell mdl-cell--8-col mdl-cell--2-offset-desktop">
+            <div class="mdl-card mdl-color--grey-300 mdl-shadow--16dp">
+              <div class="mdl-card__title">
+                 <div class="mdl-card__title-text">{{ post.title }}</div>
+                  <div class="mdl-layout-spacer"></div>
+                  <div>{{ post.created.date() }}</div>
+              </div>
+              <div class="mdl-card__supporting-text mdl-grid mdl-grid--no-spacing">
+                  <div class="mdl-cell mdl-cell--3-col-desktop">
+                      <img class="post-img img-responsive" src="/static/images/article_images/{{ post.image }}.jpg" alt="agriculture">
+                  </div>
+                  <div class="mdl-cell mdl-cell--9-col-desktop">
+                    <p>{{ post.quote}}...</p>
+                  </div>
 
-<h1>Hi</h1>
+              </div>
+              <div class="card__actions">
+                <a class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" href="/view/{{ post.key().id() }}">
+                    Go to article
+                </a>
+              </div>
+            </div>
+
+        </div>
+    {% endfor %}
+{% endif %}
+    {% if user %}
+    <a href="/new" id="view-source" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-color--accent mdl-color-text--black"><b>Add post</b></a>
+    {% endif %}
+</div>
+
 {% endblock content %}

@@ -49,12 +49,14 @@
     </div>
     <div class="mdl-cell mdl-cell--12-col new_section">
     </div>
+
     <!-- MDL template Comment section -->
     <div class="mdl-grid">
+        {% if user %}
         <form class="mdl-cell mdl-cell--12-col" method="post">
 
                 <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                  <textarea rows=1 class="mdl-textfield__input" id="comment"></textarea>
+                  <textarea rows=1 class="mdl-textfield__input" id="comment" name="comment_text"></textarea>
                   <label for="comment" class="mdl-textfield__label">Join the discussion</label>
                 </div>
                 <button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon">
@@ -62,6 +64,15 @@
                 </button>
 
         </form>
+        {% endif %}
+
+        <div class="mdl-cell mdl-cell--12-col">
+            <h3>Comments</h3>
+            {% for comment in comments %}
+                <p>{{ comment.comment }}</p>
+            <hr>
+            {% endfor %}
+        </div>
     </div>
 
 
@@ -72,36 +83,13 @@
         {% if comments and comments.count() > 0 %}
         <div class="mdl-cell mdl-cell--2-col mdl-cell--hide-tablet mdl-cell--hide-phone"></div>
         <div class="mdl-color--white mdl-shadow--4dp content mdl-color-text--grey-800 mdl-cell mdl-cell--8-col">
-            <h3>Comments</h3>
 
-
-            {% for comment in comments %}
-                <p>{{ comment.comment }}</p>
-            <hr>
-            {% endfor %}
 
 
 
 
         </div>
         <div class="mdl-cell mdl-cell--2-col mdl-cell--hide-tablet mdl-cell--hide-phone"></div>
-        {% endif %}
-
-        {% if user %}
-            <div class="mdl-cell mdl-cell--2-col mdl-cell--hide-tablet mdl-cell--hide-phone"></div>
-            <div class="mdl-color--white mdl-shadow--4dp content mdl-color-text--grey-800 mdl-cell mdl-cell--8-col">
-                <h3>Write a comment</h3>
-                <form method="post">
-                      <div class="mdl-textfield mdl-js-textfield" style="width: 100%">
-                        <textarea class="mdl-textfield__input" type="text" rows= "3" id="comment_text" name="comment_text" ></textarea>
-                        <label class="mdl-textfield__label" for="comment_text">Comment</label>
-                      </div>
-
-                    <input hidden name="post_id" value="{{ post.key().id() }}">
-                    <button type="submit">Send</button>
-                </form>
-            </div>
-        </div>
         {% endif %}
 </div>
 {% endblock content %}
