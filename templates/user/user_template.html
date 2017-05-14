@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+
+{% block siteStyle %}
+<link type="text/css" rel="stylesheet" href="/static/stylesheets/user_system_style.css" />
+{% endblock siteStyle %}
+
+{% block content %}
+<div class="mdl-grid--no-spacing">
+    <div class="mdl-cell mdl-cell--4-col mdl-cell--4-offset-desktop ">
+        <div class="mdl-card mdl-shadow--16dp">
+          <div class="mdl-card__title">
+             <h2 class="mdl-card__title-text">
+             {% block title %}
+
+             {% endblock title %}</h2>
+          </div>
+          <div class="mdl-card__supporting-text">
+            {% block form %}
+
+            {% endblock form %}
+          </div>
+        </div>
+
+    </div>
+</div>
+{% endblock content %}

@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="mdl-grid">
+    <div class="mdl-cell mdl-cell--12-col mdl-color--white mdl-shadow--4dp content mdl-color-text--grey-800 mdl-grid">
+    <div class="mdl-cell mdl-cell--12-col">
+        <h1>Write your article.</h1>
+    </div>
+    <div class="mdl-cell mdl-cell--12-col">
+
+    </div>
+    <div class="mdl-cell mdl-cell--12-col">
+
+    </div>
+
+
+        <form method="post">
+            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <input class="mdl-textfield__input" type="text" id="post_title" name="post_title" value="{% if post %}{{ post.title }}{% endif %}">
+                <label class="mdl-textfield__label" for="post_title">Title</label>
+            </div>
+
+            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <input class="mdl-textfield__input" type="text" id="post_image" name="post_image" value="{% if post %}{{ post.img }}{% endif %}">
+                <label class="mdl-textfield__label" for="post_image">Image</label>
+            </div>
+
+            <div class="mdl-textfield mdl-js-textfield">
+                <textarea class="mdl-textfield__input" type="text" rows= "3" id="post_content" name="post_content">{% if post %}{{ post.content }}{% endif %}</textarea>
+                <label class="mdl-textfield__label" for="post_content">Content</label>
+            </div>
+
+
+
+
+            {% if editing %}
+                Save Changes, Delete Post
+            {% else %}
+                <button type="submit">Save Post</button>
+            {% endif %}
+        </form>
+
+    </div>
+</div>
+{% endblock content %}

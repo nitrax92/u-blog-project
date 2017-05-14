@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+
+
+{% block siteStyle %}
+<link type="text/css" rel="stylesheet" href="/static/stylesheets/blog_post_style.css" />
+{% endblock siteStyle %}
+
+{% block content %}
+<div class="mdl-grid">
+    <div class="mdl-cell mdl-cell--2-col mdl-cell--hide-tablet mdl-cell--hide-phone"></div>
+    <div class="post-content mdl-color--grey-300 mdl-shadow--4dp content mdl-color-text--black mdl-cell mdl-cell--8-col mdl-grid">
+    <div class="mdl-cell mdl-cell--12-col title">
+        <h2>{{ post.title }}</h2>
+    </div>
+    <div class="mdl-cell mdl-cell--12-col">
+        <img class="post-img img-responsive" src="/static/images/article_images/{{ post.image }}.jpg" alt="agriculture" align="left">
+         <p>
+            {{ post.content|safe }}
+        </p>
+    </div>
+    <div class="mdl-cell mdl-cell--10-col">
+
+        <p>Author: {{ post.user.username }}<br>Date: {{ post.created.date() }}</p>
+        <span class="mdl-badge " data-badge="{{ post.votes }}">Votes</span>
+    </div>
+
+    <div class="mdl-cell mdl-cell--2-col mdl-grid">
+        <div class="mdl-cell mdl-cell--12-col-desktop">
+            {%  if user and post.user.key().id() ==  user.key().id()  %}
+            <a href="/edit/{{ post.key().id() }}">
+            <button class="mdl-button mdl-js-button mdl-button--icon mdl-button--colored">
+              <i class="material-icons">build</i>
+            </button>
+            </a>
+        {% endif %}
+        </div>
+        <div class="mdl-cell mdl-cell--12-col-desktop">
+             <a href="/downvote/{{ post.key().id() }}">
+                <button class="mdl-button mdl-js-button mdl-button--icon mdl-button--colored">
+                  <i class="material-icons">thumb_down</i>
+                </button>
+            </a>
+          <a href="/upvote/{{ post.key().id() }}">
+                <button class="mdl-button mdl-js-button mdl-button--icon mdl-button--colored">
+                  <i class="material-icons">thumb_up</i>
+                </button>
+            </a>
+        </div>
+    </div>
+    <div class="mdl-cell mdl-cell--12-col new_section">
+    </div>
+    <!-- MDL template Comment section -->
+    <div class="mdl-grid">
+        <form class="mdl-cell mdl-cell--12-col" method="post">
+
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                  <textarea rows=1 class="mdl-textfield__input" id="comment"></textarea>
+                  <label for="comment" class="mdl-textfield__label">Join the discussion</label>
+                </div>
+                <button class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-button--icon">
+                  <i class="material-icons" role="presentation">check</i><span class="visuallyhidden">add comment</span>
+                </button>
+
+        </form>
+    </div>
+
+
+        </div>
+        <div class="mdl-cell mdl-cell--2-col mdl-cell--hide-tablet mdl-cell--hide-phone"></div>
+
+
+        {% if comments and comments.count() > 0 %}
+        <div class="mdl-cell mdl-cell--2-col mdl-cell--hide-tablet mdl-cell--hide-phone"></div>
+        <div class="mdl-color--white mdl-shadow--4dp content mdl-color-text--grey-800 mdl-cell mdl-cell--8-col">
+            <h3>Comments</h3>
+
+
+            {% for comment in comments %}
+                <p>{{ comment.comment }}</p>
+            <hr>
+            {% endfor %}
+
+
+
+
+        </div>
+        <div class="mdl-cell mdl-cell--2-col mdl-cell--hide-tablet mdl-cell--hide-phone"></div>
+        {% endif %}
+
+        {% if user %}
+            <div class="mdl-cell mdl-cell--2-col mdl-cell--hide-tablet mdl-cell--hide-phone"></div>
+            <div class="mdl-color--white mdl-shadow--4dp content mdl-color-text--grey-800 mdl-cell mdl-cell--8-col">
+                <h3>Write a comment</h3>
+                <form method="post">
+                      <div class="mdl-textfield mdl-js-textfield" style="width: 100%">
+                        <textarea class="mdl-textfield__input" type="text" rows= "3" id="comment_text" name="comment_text" ></textarea>
+                        <label class="mdl-textfield__label" for="comment_text">Comment</label>
+                      </div>
+
+                    <input hidden name="post_id" value="{{ post.key().id() }}">
+                    <button type="submit">Send</button>
+                </form>
+            </div>
+        </div>
+        {% endif %}
+</div>
+{% endblock content %}

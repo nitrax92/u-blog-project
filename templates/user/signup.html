@@ -1,0 +1,66 @@
+{% extends 'user/user_template.html' %}
+
+
+{% block title %}
+    Register
+{% endblock title %}
+
+{% block form %}
+<form method="post">
+    <table>
+        <tr>
+            <td>Username</td>
+            <td><input name="username" type="text" value="{{username}}"></td>
+            <td>{{ error_username }}</td>
+        </tr>
+        <tr>
+            <td>Password</td>
+            <td><input name="password" type="password"></td>
+            <td>{{ error_password }}</td>
+        </tr>
+        <tr>
+            <td>Password Confirm</td>
+            <td><input name="password_conf" type="password"></td>
+            <td>{{ error_password_conf }}</td>
+        </tr>
+        <tr>
+            <td>Email (Optional)</td>
+            <td><input name="email" type="email"></td>
+            <td>{{ error_email }}</td>
+        </tr>
+    </table>
+    <button type="submit" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored">Send</button>
+</form>
+{% endblock form %}
+
+
+
+
+{% block old_content %}
+<h3>Please fill in this form to continue.</h3>
+<form method="post">
+    <table>
+        <tr>
+            <td>Username</td>
+            <td><input name="username" type="text" value="{{username}}"></td>
+            <td>{{ error_username }}</td>
+        </tr>
+        <tr>
+            <td>Password</td>
+            <td><input name="password" type="password"></td>
+            <td>{{ error_password }}</td>
+        </tr>
+        <tr>
+            <td>Password Confirm</td>
+            <td><input name="password_conf" type="password"></td>
+            <td>{{ error_password_conf }}</td>
+        </tr>
+        <tr>
+            <td>Email (Optional)</td>
+            <td><input name="email" type="email"></td>
+            <td>{{ error_email }}</td>
+        </tr>
+    </table>
+    <button type="submit" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored">Send</button>
+</form>
+{% endblock old_content %}

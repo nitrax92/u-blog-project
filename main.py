@@ -52,7 +52,6 @@ class User(db.Model):
             return u
 
 
-
 # Blog Section
 class Post(db.Model):
     title = db.StringProperty(verbose_name="Title", required=True)
@@ -129,8 +128,8 @@ class SignUp(Handler):
     def get(self):
         if self.user:
             logging.info("Already Signed in?? %s" % self.user)
-            self.redirect('/blog')
-        self.render("signup.html")
+            self.redirect('/')
+        self.render("user/signup.html")
 
     def post(self):
         have_error = False
@@ -157,7 +156,7 @@ class SignUp(Handler):
             have_error = True
 
         if have_error:
-            self.render('signup.html', **self.context)
+            self.render('user/signup.html', **self.context)
         else:
             self.done()
 
@@ -176,12 +175,12 @@ class Register(SignUp):
             user.put()
 
             self.login(user)
-            self.redirect('/blog')
+            self.redirect('/')
 
 
 class Login(Handler):
     def get(self):
-        self.render('login.html')
+        self.render('user/login.html')
 
     def post(self):
         users = User.all()
@@ -202,7 +201,7 @@ class Login(Handler):
                 self.redirect('/')
         else:
             msg = 'Invalid login'
-            self.render('login.html', error = msg)
+            self.render('user/login.html', message=msg, error=msg)
 
 
 class Logout(Handler):
@@ -211,9 +210,83 @@ class Logout(Handler):
         self.redirect('/')
 
 
+class ViewPost(Handler):
+    def get(self, post_id):
+        post = Post.get_by_id(int(post_id))
 
+        if post:
+            comments = post.get_comments(post)
+            logging.info(comments)
+            self.render("blog_post.html", post=post, comments=comments)
+
+        else:
+
+            self.redirect("/")
+
+    def post(self, post_id):
+        # Posted comment to blog_post
+        comment = self.request.get("comment_text")
+
+        if post_id.isdigit():
+            Blog_post = Post.get_by_id(int(post_id))
+
+            if comment:
+                new_comment = Comment(blog_post=Blog_post, comment=comment, user=self.user)
+                new_comment.put()
+            else:
+                error_message = "Did you remember a comment?"
+            comments = Blog_post.get_comments(Blog_post)
+            self.render("blog_post.html", message=error_message, post=Blog_post, comments=comments)
+
+        else:
+            self.redirect("/")
+
+
+class NewPost(Handler):
+    def get(self):
+        if not self.user:
+            self.redirect("/login?next=/blog/new")
+
+        self.render("blog/new_post.html")
+
+    def post(self):
+        title = self.request.get("post_title")
+        content = self.request.get("post_content")
+        image = self.request.get("post_image")
+        quote = content[:150]
+        user = self.user
+
+        content = content.replace('\n', '<br>')
+        if not user:
+
+            self.redirect("/register")
+
+        # All good.
+        if title and content:
+            b = Post(title=title, content=content, user=user, quote=quote, image=image)
+            b.put()
+            self.redirect("/")
+
+        else:
+            self.render("blog/new_blog.html", title=title, content=content)
+            # ERROR; ERROR; ERROR; ERROR; ERROR
+
+class UserPosts(Handler):
+    def get(self, username):
+        user = User.by_username(username)
+        if user:
+            blog_entries = Post.by_user(user)
+            for blog in blog_entries:
+                logging.info(blog.key())
+        self.redirect("/")
 
 
 app = webapp2.WSGIApplication([
-    ('/', MainHandler)
+    ('/', MainHandler),
+    ('/register', Register),
+    ('/login', Login),
+    ('/logout', Logout),
+    ('/new', NewPost),
+    ('/user/([a-zA-Z0-9_-]\w+)', UserPosts),
+    ('/view/([0-9]+)', ViewPost),
 ], debug=True)
