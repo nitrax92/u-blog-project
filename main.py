@@ -175,7 +175,7 @@ class Register(SignUp):
         if user:
             msg = "User Already Exists"
             self.context['error_username'] = msg
-            self.render('signup.html', **self.context)
+            self.render('user/signup.html', **self.context)
 
         else:
             user = User.register(self.username, self.password, self.email)
@@ -316,7 +316,11 @@ class Vote(Handler):
     def get(self, post_id):
         blog_post = Post.get_by_id(int(post_id))
         if blog_post:
-            if not self.user or blog_post.user.key().id() != self.user.key().id():
+            if not self.user:
+                logging.info("Not logged in.")
+                pass
+
+            elif blog_post.user.key().id() != self.user.key().id():
                 blog_post = self.vote(blog_post)
                 blog_post.put()
 
