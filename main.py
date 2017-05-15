@@ -90,7 +90,7 @@ class Comment(db.Model):
 
     @classmethod
     def by_post(cls, post):
-        comments = Comment.all().filter('blog_post', post)
+        comments = Comment.all().filter('blog_post', post).order('-created')
         return comments
 
 
